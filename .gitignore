@@ -5,4 +5,3 @@ dist/**
 .idea/**
 .grunt/**
 .DS_Store
-build

@@ -103,6 +103,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   }
 
   playScale(): any {
+    console.log('setting playing to true')
     this.setState({ is_playing: true });
 
     const {scale, notes} = SCALES[this.props.Scale].get_notes(this.props.Note);
@@ -126,9 +127,11 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         `${noteEntry.name} - ${noteEntry.scaleName}`;
       
       if (!self.state.is_playing) {
+        console.log('not playing anymore so canceling')
         self.setState({ playing_fret: undefined });
         cb("stop");
       } else {
+        console.log('doing the thing at ', {sNum, fNum});
         self.startPlayFret([sNum, fNum]);
         playClick();
         setTimeout(cb, (60 * 1000) /  this.props.bpm);
