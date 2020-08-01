@@ -6,7 +6,8 @@
 
 .fretnum {
     padding: 0;
-    text-align: center;
+    right: -9px;
+    /* text-align: center; */
     font-weight: bold;
     cursor: pointer;
     -webkit-touch-callout: none;

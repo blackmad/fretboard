@@ -384,6 +384,29 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       }
     })();
 
+    const SingleDotFrets = [3, 5, 7, 9, 15, 17, 19]
+    const FretDots = (
+      <div className="row" style={{ margin: 0 }}>
+        {__range__(0, this.state.fretsNum, true).map((num) => {
+          return (
+            <div
+              key={`fret_dot_${num}`}
+              className={`col-md-1 fretdot`}
+              style={{ 
+                textAlign: 'left',
+                width: `${this.props.fretWidth}px` ,
+                right: '9px',
+                fontSize: 'x-large',
+              }}
+            >
+              {SingleDotFrets.includes(num) && '•'}
+              {num === 12 && '• •'}
+            </div>
+          );
+        })}
+      </div>
+    );
+
     const FretNumbers = (
       <div className="row" style={{ margin: 0 }}>
         {__range__(0, this.state.fretsNum, true).map((num) => {
@@ -420,6 +443,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         <div className="js-guitar" ref={this.jsGuitarRef}>
           {SelectorComp}
           {StringsList}
+          {FretDots}
+          {FretNumbers}
         </div>
         <div
           style={{
