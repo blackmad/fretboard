@@ -17,6 +17,7 @@ export type NoteEntry = {
   name: string;
   degree: number;
   scaleName: string;
+  offset: number;
 };
 
 const generate_scale_helper = (notesRef: string[], Note: string, scale: Scale): NoteEntry[] => {
@@ -26,14 +27,18 @@ const generate_scale_helper = (notesRef: string[], Note: string, scale: Scale): 
       name: Note,
       degree: 1,
       scaleName: "Root",
+      offset: 0,
     },
   ];
   idx = get_note_index(Note, notesRef);
   let degree = 0;
+  let offset = 0;
   return scale_notes.concat(
     (() => {
       const result = [];
       for (let s of Array.from(scale.size)) {
+        offset += s;
+
         if (s === BigSTEP) {
           idx = get_new_index(idx, notesRef);
           idx = get_new_index(idx, notesRef);
@@ -48,6 +53,7 @@ const generate_scale_helper = (notesRef: string[], Note: string, scale: Scale): 
           name: notesRef[idx],
           degree: degree + 2,
           scaleName: scale.names[degree],
+          offset,
         });
         degree++;
       }

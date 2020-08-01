@@ -26,30 +26,30 @@ import GString from "./GString";
 import Button from "react-bootstrap/Button";
 import ToggleButton from "react-bootstrap/ToggleButton";
 
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faStop } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlay,
+  faStop,
+  faRedo,
+  faArrowRight,
+  faArrowUp,
+  faArrowDown,
+  faRandom,
+} from "@fortawesome/free-solid-svg-icons";
 
-const audioContext = new AudioContext();
+import Howl, { HowlCallback, HowlErrorCallback } from "howler";
+
+export const get_sound = (sNum: number, fNum: number, onload: HowlCallback): Howl.Howl => {
+  const audio_file_wav = `./resources/${sNum}string/wav/${fNum}.wav`;
+  const audio_file_ogg = `./resources/${sNum}string/ogg/${fNum}.ogg`;
+  const audio_file_mp3 = `./resources/${sNum}string/mp3/${fNum}.mp3`;
+  return new Howl.Howl({ src: [audio_file_ogg, audio_file_mp3, audio_file_wav], onload });
+};
+
+const clickHowl = new Howl.Howl({ src: "./resources/cowbell.wav" });
 
 function playClick() {
-  const time = audioContext.currentTime;
-  const noteLength = 0.05;
-  const beatNumber = 0;
-  // create an oscillator
-  var osc = audioContext.createOscillator();
-  osc.connect(audioContext.destination);
-  if (beatNumber % 16 === 0)
-    // beat 0 == high pitch
-    osc.frequency.value = 880.0;
-  else if (beatNumber % 4 === 0)
-    // quarter notes = medium pitch
-    osc.frequency.value = 440.0;
-  // other 16th notes = low pitch
-  else osc.frequency.value = 220.0;
-
-  osc.start(time);
-  osc.stop(time + noteLength);
+  clickHowl.play();
 }
 
 const getClearFrets = (
@@ -124,7 +124,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       // console.log(notes);
       const noteEntry: NoteEntry = _.find(scale, (n) => n.name === note);
 
-      this.displayRef.current!.innerHTML = `${noteEntry.name} - ${noteEntry.scaleName}`;
+      console.log(this.state.direction )
+      const halfToneOffset = this.state.direction === 'DOWN' ? `+${noteEntry.offset}` : `-${noteEntry.offset === 0 ? 0 : 12-noteEntry.offset}`
+
+      this.displayRef.current!.innerHTML = `${noteEntry.name} - ${noteEntry.scaleName} ${halfToneOffset}`;
 
       if (!self.state.is_playing) {
         console.log("not playing anymore so canceling");
@@ -263,8 +266,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     let selector = null;
     const is_playing = false;
     const direction = "DOWN";
-    const repeat = false;
-    const changeDirection = false;
+    const repeat = true;
+    const changeDirection = true;
     const selectorWidth = selectorFretsCount * props.fretWidth;
     const playing_fret = undefined;
 
@@ -418,9 +421,19 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           {SelectorComp}
           {StringsList}
         </div>
-        <div>
+        <div
+          style={{
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+            alignContent: "center",
+            display: "flex",
+            paddingTop: "20px",
+          }}
+        >
           <Button
             variant="outline-primary"
+            className={this.state.is_playing ? "active" : ""}
             onClick={() => (this.state.is_playing ? this.stopPlayScale() : this.playScale())}
           >
             {this.state.is_playing ? (
@@ -429,53 +442,40 @@ export default class Guitar extends React.Component<MyProps, MyState> {
               <FontAwesomeIcon icon={faPlay} />
             )}
           </Button>
+
+          <Button
+            variant="outline-primary"
+            className={this.state.repeat ? "active" : ""}
+            onClick={() => this.setState({ repeat: !this.state.repeat })}
+          >
+            <FontAwesomeIcon icon={faRedo} />
+          </Button>
+
+          <Button
+            variant="outline-primary"
+            className={this.state.direction === "UP" ? "active" : ""}
+            onClick={() => this.toggleDirection()}
+          >
+            {this.state.direction === "UP" ? (
+              <FontAwesomeIcon icon={faArrowDown} />
+            ) : (
+              <FontAwesomeIcon icon={faArrowUp} />
+            )}
+          </Button>
+
+          <Button
+            variant="outline-primary"
+            className={this.state.changeDirection ? "active" : ""}
+            onClick={() => this.setState({ changeDirection: !this.state.changeDirection })}
+          >
+            <FontAwesomeIcon icon={faRandom} />
+          </Button>
         </div>
-        <h1
-          ref={this.displayRef}
-          style={{ display: this.state.is_playing ? "block" : "none" }}
-        ></h1>
+        <h1 ref={this.displayRef} style={{ display: this.state.is_playing ? "block" : "none" }}>
+          xxxx
+        </h1>
       </div>
     );
-
-    // return div(
-    //   {
-    //     style: {
-    //       width: (this.state.fretsNum + 1) * this.props.fretWidth,
-    //       margin: "auto",
-    //     },
-    //   },
-    //   div({ className: "js-guitar" }, SelectorComp, StringsList),
-    //   FretNumbers,
-    //   div(
-    //     { className: "text-center" },
-    //     div(
-    //       { className: "btn-group bot-toolbar panel panel-default" },
-    //       button(
-    //         {
-    //           className: "btn btn-default",
-    //           onClick: this.state.is_playing ? this.stopPlayScale : this.playScale,
-    //         },
-    //         this.state.is_playing
-    //           ? span({ className: "glyphicon glyphicon-stop" }, "")
-    //           : span({ className: "glyphicon glyphicon-play" }, "")
-    //       ),
-    //       ToggleButton(
-    //         { onChange: () => this.toggleDirection() },
-    //         this.state.direction === "UP"
-    //           ? span({ className: "glyphicon glyphicon-arrow-down" })
-    //           : span({ className: "glyphicon glyphicon-arrow-up" })
-    //       ),
-    //       ToggleButton(
-    //         { onChange: (repeat) => this.setState({ repeat }) },
-    //         span({ className: "glyphicon glyphicon-repeat" })
-    //       ),
-    //       ToggleButton(
-    //         { onChange: (changeDirection) => this.setState({ changeDirection }) },
-    //         span({ className: "glyphicon glyphicon-random" })
-    //       )
-    //     )
-    //   )
-    // );
   }
 }
 
