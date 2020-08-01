@@ -76,20 +76,10 @@ export const get_new_index = (old_idx: number, notes: string[]) => {
 
 export const getNoteGenerator = (note: string, notes: string[]) => {
   let idx = get_note_index(note, notes);
-  let lastNote = '';
   return () => {
     const ret_idx = idx;
     idx = get_new_index(idx, notes);
-    const curNote = notes[ret_idx];
-    if (!lastNote) {
-        lastNote = curNote;
-    } else {
-        if (lastNote[0] === curNote[0]) {
-            console.log('enharmonica');
-            // if 
-        }
-    }
-    return curNote;
+    return notes[ret_idx];
   };
 };
 

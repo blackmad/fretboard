@@ -24,6 +24,8 @@ import { BlFret, blFret } from "./blFret";
 import GString from "./GString";
 
 import Button from "react-bootstrap/Button";
+import ToggleButton from "react-bootstrap/ToggleButton";
+
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faStop } from "@fortawesome/free-solid-svg-icons";
@@ -31,21 +33,23 @@ import { faPlay, faStop } from "@fortawesome/free-solid-svg-icons";
 const audioContext = new AudioContext();
 
 function playClick() {
-  const time =  audioContext.currentTime;
+  const time = audioContext.currentTime;
   const noteLength = 0.05;
   const beatNumber = 0;
-    // create an oscillator
-    var osc = audioContext.createOscillator();
-    osc.connect( audioContext.destination );
-    if (beatNumber % 16 === 0)    // beat 0 == high pitch
-        osc.frequency.value = 880.0;
-    else if (beatNumber % 4 === 0 )    // quarter notes = medium pitch
-        osc.frequency.value = 440.0;
-    else                        // other 16th notes = low pitch
-        osc.frequency.value = 220.0;
+  // create an oscillator
+  var osc = audioContext.createOscillator();
+  osc.connect(audioContext.destination);
+  if (beatNumber % 16 === 0)
+    // beat 0 == high pitch
+    osc.frequency.value = 880.0;
+  else if (beatNumber % 4 === 0)
+    // quarter notes = medium pitch
+    osc.frequency.value = 440.0;
+  // other 16th notes = low pitch
+  else osc.frequency.value = 220.0;
 
-    osc.start( time );
-    osc.stop( time + noteLength );
+  osc.start(time);
+  osc.stop(time + noteLength);
 }
 
 const getClearFrets = (
@@ -102,11 +106,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     return this.setState({ playing_fret: fret });
   }
 
-  playScale(): any {
-    console.log('setting playing to true')
-    this.setState({ is_playing: true });
-
-    const {scale, notes} = SCALES[this.props.Scale].get_notes(this.props.Note);
+  playScaleHelper = (): any => {
+    const { scale, notes } = SCALES[this.props.Scale].get_notes(this.props.Note);
 
     const notesMap = generateNotes(
       this.state.stringsNum,
@@ -123,18 +124,17 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       // console.log(notes);
       const noteEntry: NoteEntry = _.find(scale, (n) => n.name === note);
 
-      this.displayRef.current!.innerHTML = 
-        `${noteEntry.name} - ${noteEntry.scaleName}`;
-      
+      this.displayRef.current!.innerHTML = `${noteEntry.name} - ${noteEntry.scaleName}`;
+
       if (!self.state.is_playing) {
-        console.log('not playing anymore so canceling')
+        console.log("not playing anymore so canceling");
         self.setState({ playing_fret: undefined });
         cb("stop");
       } else {
-        console.log('doing the thing at ', {sNum, fNum});
+        console.log("doing the thing at ", { sNum, fNum });
         self.startPlayFret([sNum, fNum]);
         playClick();
-        setTimeout(cb, (60 * 1000) /  this.props.bpm);
+        setTimeout(cb, (60 * 1000) / this.props.bpm);
       }
       // NOTE: bring this back for sound. mildly broken
       // const tuningOffset = self.props.tuning.offset[sNum - 1];
@@ -157,13 +157,13 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       const [sNum, fNum] = Array.from(args[0]),
         cb = args[1];
       const tuningOffset = self.props.tuning.offset[sNum - 1];
-      console.log('loading fret!', {sNum, fNum})
+      console.log("loading fret!", { sNum, fNum });
       return load_fret(sNum, parseInt(fNum) + tuningOffset, cb);
     };
 
     emitter.pub(EVENT_SOUNDS_LOADING_START);
     return async.map(tabs_to_play, load_iterator, () => {
-      console.log('done!');
+      console.log("done!");
       emitter.pub(EVENT_SOUNDS_LOADING_STOP);
       return async.mapSeries(tabs_to_play, play_iterator, (err) => {
         if (!self.state.is_playing) {
@@ -179,6 +179,13 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           return self.setState({ is_playing: false });
         }
       });
+    });
+  };
+
+  playScale(): any {
+    console.log("setting playing to true");
+    this.setState({ is_playing: true }, () => {
+      this.playScaleHelper();
     });
   }
 
@@ -290,8 +297,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     return this.setState({ selectorX: x, is_playing: false });
   }
 
-  get_frets = (): Record<number, Record<number, BlFret>> => {      
-    const {scale, notes} = SCALES[this.props.Scale].get_notes(this.props.Note);
+  get_frets = (): Record<number, Record<number, BlFret>> => {
+    const { scale, notes } = SCALES[this.props.Scale].get_notes(this.props.Note);
 
     const notesMap = generateNotes(
       this.state.stringsNum,
@@ -332,7 +339,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           }
         }
 
-        if (((needle = fret.data().note), Array.from(scale.map((n: NoteEntry) => n.name)).includes(needle))) {
+        if (
+          ((needle = fret.data().note),
+          Array.from(scale.map((n: NoteEntry) => n.name)).includes(needle))
+        ) {
           fret.check();
         }
 
@@ -343,7 +353,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     });
 
     return frets;
-  }
+  };
 
   render() {
     const frets = this.get_frets();
@@ -420,7 +430,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
             )}
           </Button>
         </div>
-        <h1 ref={this.displayRef}></h1>
+        <h1
+          ref={this.displayRef}
+          style={{ display: this.state.is_playing ? "block" : "none" }}
+        ></h1>
       </div>
     );
 
