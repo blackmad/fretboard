@@ -1,6 +1,5 @@
 lib-js/**
 node_modules/**
-public/**
 dist/**
 .idea/**
 .grunt/**
