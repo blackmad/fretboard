@@ -26,6 +26,7 @@ import GString from "./GString";
 import Button from "react-bootstrap/Button";
 import ToggleButton from "react-bootstrap/ToggleButton";
 
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -38,6 +39,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import Howl, { HowlCallback, HowlErrorCallback } from "howler";
+
 
 export const get_sound = (sNum: number, fNum: number, onload: HowlCallback): Howl.Howl => {
   const audio_file_wav = `./resources/${sNum}string/wav/${fNum}.wav`;
@@ -277,7 +279,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       height: stringsNum * props.fretHeight,
       width: selectorWidth,
       onXChange: (x: number) => this.onSelectorMove(x),
-      minX: -1,
+      minX: 20,
       maxX: -1,
     };
 
@@ -294,6 +296,12 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       playing_fret,
       selectorX: 0,
     };
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ') {
+        this.togglePlayPause();
+      }
+    });
   }
 
   onSelectorMove(x: number) {
@@ -358,6 +366,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     return frets;
   };
 
+  togglePlayPause = () => {
+    this.state.is_playing ? this.stopPlayScale() : this.playScale();
+  }
+
   render() {
     const frets = this.get_frets();
 
@@ -400,7 +412,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
               }}
             >
               {SingleDotFrets.includes(num) && '•'}
-              {num === 12 && '• •'}
+              {num === 12 && '••'}
             </div>
           );
         })}
@@ -459,7 +471,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           <Button
             variant="outline-primary"
             className={this.state.is_playing ? "active" : ""}
-            onClick={() => (this.state.is_playing ? this.stopPlayScale() : this.playScale())}
+            onClick={this.togglePlayPause}
           >
             {this.state.is_playing ? (
               <FontAwesomeIcon icon={faStop} />

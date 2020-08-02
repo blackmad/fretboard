@@ -26,7 +26,7 @@ const print_size = (size: number[]) =>
       } else if (s === BigSTEP) {
         result.push("BigSTEP");
       } else {
-        result.push(undefined);
+        result.push(`+${s}`);
       }
     }
 

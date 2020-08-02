@@ -21,7 +21,7 @@ export type NoteEntry = {
 };
 
 const generate_scale_helper = (notesRef: string[], Note: string, scale: Scale): NoteEntry[] => {
-  let idx;
+  let idx: number;
   const scale_notes = [
     {
       name: Note,
@@ -39,16 +39,10 @@ const generate_scale_helper = (notesRef: string[], Note: string, scale: Scale): 
       for (let s of Array.from(scale.size)) {
         offset += s;
 
-        if (s === BigSTEP) {
+        _.times(s, () => {
           idx = get_new_index(idx, notesRef);
-          idx = get_new_index(idx, notesRef);
-          idx = get_new_index(idx, notesRef);
-        } else if (s === STEP) {
-          idx = get_new_index(idx, notesRef);
-          idx = get_new_index(idx, notesRef);
-        } else {
-          idx = get_new_index(idx, notesRef);
-        }
+        });
+
         result.push({
           name: notesRef[idx],
           degree: degree + 2,
@@ -101,13 +95,13 @@ const SCALES: Record<string, Scale> = {
     desc: "Major scale",
     size: [STEP, STEP, hSTEP, STEP, STEP, STEP, hSTEP],
     names: [
-      "major 2nd",
-      "major 3rd",
-      "perfect 4th",
-      "perfect 5th",
-      "major 6th",
-      "major 7th",
-      "octave",
+      "Major 2nd",
+      "Major 3rd",
+      "Perfect 4th",
+      "Perfect 5th",
+      "Major 6th",
+      "Major 7th",
+      "Octave",
     ],
     get_notes(Tonica) {
       return generate_scale(Tonica, SCALES.Major);
@@ -117,13 +111,13 @@ const SCALES: Record<string, Scale> = {
   Minor: {
     desc: "Minor scale",
     names: [
-      "major 2nd",
-      "minor 3rd",
-      "perfect 4th",
-      "perfect 5th",
-      "minor 6th",
-      "minor 7th",
-      "octave",
+      "Major 2nd",
+      "Minor 3rd",
+      "Perfect 4th",
+      "Perfect 5th",
+      "Minor 6th",
+      "Minor 7th",
+      "Octave",
     ],
     size: [STEP, hSTEP, STEP, STEP, hSTEP, STEP, STEP],
     get_notes(Tonica) {
@@ -151,7 +145,7 @@ const SCALES: Record<string, Scale> = {
 
   PentatonicMinor: {
     desc: "Pentatonic Minor",
-    names: ["minor 3rd", "perfect 4th", "perfect 5th", "minor 7th", "octave"],
+    names: ["Minor 3rd", "Perfect 4th", "Perfect 5th", "Minor 7th", "Octave"],
     size: [BigSTEP, STEP, STEP, BigSTEP, STEP],
     get_notes(Tonica) {
       return generate_scale(Tonica, SCALES.PentatonicMinor);
@@ -160,10 +154,28 @@ const SCALES: Record<string, Scale> = {
 
   PentatonicMajor: {
     desc: "Pentatonic Major",
-    names: ["major 3rd", "perfect 4th", "perfect 5th", "major 7th", "octave"],
+    names: ["Major 3rd", "Perfect 4th", "Perfect 5th", "Major 7th", "Octave"],
     size: [STEP, STEP, BigSTEP, STEP, BigSTEP],
     get_notes(Tonica) {
       return generate_scale(Tonica, SCALES.PentatonicMajor);
+    },
+  },
+
+  MajorArpeggio: {
+    desc: "Major Arpeggio",
+    names: ["Major 3rd", "Perfect 5th", "Octave"],
+    size: [4, 3, 5],
+    get_notes(Tonica) {
+      return generate_scale(Tonica, SCALES.MajorArpeggio);
+    },
+  },
+
+  MinorArpeggio: {
+    desc: "Minor Arpeggio",
+    names: ["Minor 3rd", "Perfect 5th", "Octave"],
+    size: [3, 4, 5],
+    get_notes(Tonica) {
+      return generate_scale(Tonica, SCALES.MinorArpeggio);
     },
   },
 };
