@@ -81,16 +81,31 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
             {print_size(SCALES[this.state.Scale].size)}
           </p>
           <p className="text-center text-bold">
-            {`${SCALES[this.state.Scale].get_notes(this.state.Note).scale.map((n: any) => n.name).join(" ")}`}
+            {`${SCALES[this.state.Scale]
+              .get_notes(this.state.Note)
+              .scale.map((n: any) => n.name)
+              .join(" ")}`}
           </p>
           <div>
             <div style={{ width: "850px", margin: "auto" }}>
+              <Guitar
+                bpm={this.state.bpm}
+                fretWidth={50}
+                fretHeight={30}
+                selectorFretsCount={4}
+                Note={this.state.Note}
+                Scale={this.state.Scale}
+                tuning={TUNINGS[this.state.tuning]}
+              />
+            </div>
+
+            <div style={{ width: "850px", margin: "auto", display: 'flex', justifyContent: 'center', paddingTop: '15px' }}>
               <div
                 style={{
                   display: "flex",
                   flexDirection: "row",
                   zIndex: 10000,
-                  paddingBottom: '20px'
+                  paddingBottom: "20px",
                 }}
               >
                 <div style={{ width: "100px" }}>
@@ -98,7 +113,7 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                     options={notesOptions as any}
                     placeholder="note"
                     searchable={false}
-                    values={[{value: this.state.Note, label: this.state.Note}]}
+                    values={[{ value: this.state.Note, label: this.state.Note }]}
                     onChange={(n) => this.setState({ Note: (n as any)[0].value })}
                   />
                 </div>
@@ -107,7 +122,7 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                     options={scalesOptions as any}
                     placeholder="scale"
                     searchable={false}
-                    values={[{value: this.state.Scale, label: this.state.Scale}]}
+                    values={[{ value: this.state.Scale, label: this.state.Scale }]}
                     onChange={(n) => {
                       console.log(n);
                       this.setState({ Scale: (n as any)[0].value });
@@ -125,21 +140,12 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                   />
                 </div> */}
 
-                <input 
-                value={this.state.bpm}
-                onChange={(e: any) => this.setState({bpm: Number(e!.target.value)})}
+                <input
+                  value={this.state.bpm}
+                  onChange={(e: any) => this.setState({ bpm: Number(e!.target.value) })}
                 />
               </div>
             </div>
-            <Guitar
-              bpm={this.state.bpm}
-              fretWidth={50}
-              fretHeight={30}
-              selectorFretsCount={4}
-              Note={this.state.Note}
-              Scale={this.state.Scale}
-              tuning={TUNINGS[this.state.tuning]}
-            />
           </div>
         </div>
       </div>

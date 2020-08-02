@@ -26,7 +26,6 @@ import GString from "./GString";
 import Button from "react-bootstrap/Button";
 import ToggleButton from "react-bootstrap/ToggleButton";
 
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -39,7 +38,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import Howl, { HowlCallback, HowlErrorCallback } from "howler";
-
 
 export const get_sound = (sNum: number, fNum: number, onload: HowlCallback): Howl.Howl => {
   const audio_file_wav = `./resources/${sNum}string/wav/${fNum}.wav`;
@@ -108,7 +106,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     return this.setState({ playing_fret: fret });
   }
 
-  playScaleHelper = ({firstTime}: {firstTime: boolean}): any => {
+  playScaleHelper = ({ firstTime }: { firstTime: boolean }): any => {
     const { scale, notes } = SCALES[this.props.Scale].get_notes(this.props.Note);
 
     const notesMap = generateNotes(
@@ -128,8 +126,11 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       // console.log(notes);
       const noteEntry: NoteEntry = _.find(scale, (n) => n.name === note);
 
-      console.log(this.state.direction )
-      const halfToneOffset = this.state.direction === 'DOWN' ? `+${noteEntry.offset}` : `-${noteEntry.offset === 0 ? 0 : 12-noteEntry.offset}`
+      console.log(this.state.direction);
+      const halfToneOffset =
+        this.state.direction === "DOWN"
+          ? `+${noteEntry.offset}`
+          : `-${noteEntry.offset === 0 ? 0 : 12 - noteEntry.offset}`;
 
       this.displayRef.current!.innerHTML = `${noteEntry.name} - ${noteEntry.scaleName} ${halfToneOffset}`;
 
@@ -168,18 +169,22 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       }
 
       if (self.state.repeat) {
-        return self.playScale({intro: false});
+        return self.playScale({ intro: false });
       } else {
         return self.setState({ is_playing: false });
       }
     });
-  }
+  };
 
   countOff(done: Function) {
     const countInTimes = 8;
     let timesCounted = 0;
 
     const cb = () => {
+      if (!this.state.is_playing) {
+        return;
+      }
+
       playClick();
       timesCounted++;
       this.displayRef.current!.innerHTML = timesCounted.toString();
@@ -193,13 +198,13 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     cb();
   }
 
-  playScale({intro}: {intro?: boolean}): any {
+  playScale({ intro }: { intro?: boolean }): any {
     console.log("setting playing to true");
     this.setState({ is_playing: true }, () => {
       if (intro) {
-        this.countOff(() => this.playScaleHelper({firstTime: true}));
+        this.countOff(() => this.playScaleHelper({ firstTime: true }));
       } else {
-        this.playScaleHelper({firstTime: false});
+        this.playScaleHelper({ firstTime: false });
       }
     });
   }
@@ -307,8 +312,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       selectorX: 0,
     };
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === ' ') {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === " ") {
         this.togglePlayPause();
       }
     });
@@ -377,8 +382,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   };
 
   togglePlayPause = () => {
-    this.state.is_playing ? this.stopPlayScale() : this.playScale({intro: true});
-  }
+    this.state.is_playing ? this.stopPlayScale() : this.playScale({ intro: true });
+  };
 
   render() {
     const frets = this.get_frets();
@@ -406,7 +411,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       }
     })();
 
-    const SingleDotFrets = [3, 5, 7, 9, 15, 17, 19]
+    const SingleDotFrets = [3, 5, 7, 9, 15, 17, 19];
     const FretDots = (
       <div className="row" style={{ margin: 0 }}>
         {__range__(0, this.state.fretsNum, true).map((num) => {
@@ -414,15 +419,15 @@ export default class Guitar extends React.Component<MyProps, MyState> {
             <div
               key={`fret_dot_${num}`}
               className={`col-md-1 fretdot`}
-              style={{ 
-                textAlign: 'left',
-                width: `${this.props.fretWidth}px` ,
-                right: '9px',
-                fontSize: 'x-large',
+              style={{
+                textAlign: "left",
+                width: `${this.props.fretWidth}px`,
+                right: "9px",
+                fontSize: "x-large",
               }}
             >
-              {SingleDotFrets.includes(num) && '•'}
-              {num === 12 && '••'}
+              {SingleDotFrets.includes(num) && "•"}
+              {num === 12 && "••"}
             </div>
           );
         })}
@@ -462,8 +467,32 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           margin: "auto",
         }}
       >
+        <h1
+          ref={this.displayRef}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            alignContent: "center",
+            width: "100%",
+            backgroundColor: "beige",
+            padding: "20px",
+            fontSize: "xx-large",
+            display: this.state.is_playing ? "flex" : "none",
+          }}
+        >
+          xxxx
+        </h1>
+
+        <div>
+          {FretNumbers}
+          {FretDots}
+        </div>
         <div className="js-guitar" ref={this.jsGuitarRef}>
           {SelectorComp}
+
           {StringsList}
           {FretDots}
           {FretNumbers}
@@ -518,18 +547,6 @@ export default class Guitar extends React.Component<MyProps, MyState> {
             <FontAwesomeIcon icon={faRandom} />
           </Button>
         </div>
-        <h1 ref={this.displayRef} style={{ 
-          justifyContent: 'center',
-          alignItems: 'center',
-          alignContent: 'center',
-          width: '100%',
-          backgroundColor: 'beige',
-          padding: '20px',
-          fontSize: 'xx-large',
-          display: this.state.is_playing ? "flex" : "none"
-        }}>
-          xxxx
-        </h1>
       </div>
     );
   }
