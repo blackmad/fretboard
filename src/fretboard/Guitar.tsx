@@ -108,7 +108,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     return this.setState({ playing_fret: fret });
   }
 
-  playScaleHelper = (): any => {
+  playScaleHelper = ({firstTime}: {firstTime: boolean}): any => {
     const { scale, notes } = SCALES[this.props.Scale].get_notes(this.props.Note);
 
     const notesMap = generateNotes(
@@ -117,6 +117,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       this.props.tuning.notes,
       notes
     );
+
+    let shouldPlay = firstTime ? false : true;
 
     const self = this;
     const play_iterator = (nums: number[], cb: Function) => {
@@ -179,7 +181,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         }
 
         if (self.state.repeat) {
-          return self.playScale();
+          return self.playScale({intro: false});
         } else {
           return self.setState({ is_playing: false });
         }
@@ -187,10 +189,32 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     });
   };
 
-  playScale(): any {
+  countOff(done: Function) {
+    const countInTimes = 4;
+    let timesCounted = 0;
+
+    const cb = () => {
+      playClick();
+      timesCounted++;
+      this.displayRef.current!.innerHTML = timesCounted.toString();
+      if (timesCounted === countInTimes) {
+        setTimeout(done, (60 * 1000) / this.props.bpm);
+      } else {
+        setTimeout(cb, (60 * 1000) / this.props.bpm);
+      }
+    };
+
+    cb();
+  }
+
+  playScale({intro}: {intro?: boolean}): any {
     console.log("setting playing to true");
     this.setState({ is_playing: true }, () => {
-      this.playScaleHelper();
+      if (intro) {
+        this.countOff(() => this.playScaleHelper({firstTime: true}));
+      } else {
+        this.playScaleHelper({firstTime: false});
+      }
     });
   }
 
@@ -367,7 +391,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   };
 
   togglePlayPause = () => {
-    this.state.is_playing ? this.stopPlayScale() : this.playScale();
+    this.state.is_playing ? this.stopPlayScale() : this.playScale({intro: true});
   }
 
   render() {
@@ -508,7 +532,16 @@ export default class Guitar extends React.Component<MyProps, MyState> {
             <FontAwesomeIcon icon={faRandom} />
           </Button>
         </div>
-        <h1 ref={this.displayRef} style={{ display: this.state.is_playing ? "block" : "none" }}>
+        <h1 ref={this.displayRef} style={{ 
+          justifyContent: 'center',
+          alignItems: 'center',
+          alignContent: 'center',
+          width: '100%',
+          backgroundColor: 'beige',
+          padding: '20px',
+          fontSize: 'xx-large',
+          display: this.state.is_playing ? "flex" : "none"
+        }}>
           xxxx
         </h1>
       </div>
