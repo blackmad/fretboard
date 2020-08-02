@@ -138,59 +138,45 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         self.setState({ playing_fret: undefined });
         cb("stop");
       } else {
+        if (!shouldPlay) {
+          if (noteEntry.offset === 0) {
+            shouldPlay = true;
+          } else {
+            cb();
+            return;
+          }
+        }
         console.log("doing the thing at ", { sNum, fNum });
         self.startPlayFret([sNum, fNum]);
         playClick();
         setTimeout(cb, (60 * 1000) / this.props.bpm);
       }
-      // NOTE: bring this back for sound. mildly broken
-      // const tuningOffset = self.props.tuning.offset[sNum - 1];
-      // return play_fret(sNum, parseInt(fNum) + tuningOffset, () =>
-      //   setTimeout(() => {
-      //     self.setState({ playing_fret: undefined });
-      //     if (self.state.is_playing) {
-      //       return typeof cb === "function" ? cb() : undefined;
-      //     } else {
-      //       return typeof cb === "function" ? cb("stop") : undefined;
-      //     }
-      //   }, self.state.timeout)
-      // );
     };
 
     const tabs_to_play = this.get_selected_frets();
-    // console.log(tabs_to_play);
+    if (!firstTime) {
+      tabs_to_play.shift();
+    }
+    // console.log({tabs_to_play});
 
-    const load_iterator = (...args: any) => {
-      const [sNum, fNum] = Array.from(args[0]),
-        cb = args[1];
-      const tuningOffset = self.props.tuning.offset[sNum - 1];
-      console.log("loading fret!", { sNum, fNum });
-      return load_fret(sNum, parseInt(fNum) + tuningOffset, cb);
-    };
+    return async.mapSeries(tabs_to_play, play_iterator, (err) => {
+      if (!self.state.is_playing) {
+        return;
+      }
+      if (self.state.changeDirection) {
+        self.toggleDirection();
+      }
 
-    emitter.pub(EVENT_SOUNDS_LOADING_START);
-    return async.map(tabs_to_play, load_iterator, () => {
-      console.log("done!");
-      emitter.pub(EVENT_SOUNDS_LOADING_STOP);
-      return async.mapSeries(tabs_to_play, play_iterator, (err) => {
-        if (!self.state.is_playing) {
-          return;
-        }
-        if (self.state.changeDirection) {
-          self.toggleDirection();
-        }
-
-        if (self.state.repeat) {
-          return self.playScale({intro: false});
-        } else {
-          return self.setState({ is_playing: false });
-        }
-      });
+      if (self.state.repeat) {
+        return self.playScale({intro: false});
+      } else {
+        return self.setState({ is_playing: false });
+      }
     });
-  };
+  }
 
   countOff(done: Function) {
-    const countInTimes = 4;
+    const countInTimes = 8;
     let timesCounted = 0;
 
     const cb = () => {
