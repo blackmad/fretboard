@@ -21,7 +21,6 @@ import { BlFret, blFret } from "./blFret";
 import GString from "./GString";
 
 import Button from "react-bootstrap/Button";
-import ToggleButton from "react-bootstrap/ToggleButton";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -82,6 +81,7 @@ type MyState = {
   selectorX: number;
   is_playing: boolean;
   playing_fret?: FretType;
+  next_playing_fret?: FretType;
   timeout: number;
   changeDirection: boolean;
   repeat: boolean;
@@ -114,7 +114,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     );
 
     const self = this;
-    const play_iterator = (nums: number[], cb: Function) => {
+    const play_iterator = (nums: FretType, next: FretType, cb: Function) => {
       const [sNum, fNum] = nums;
       const note = notesMap[sNum][fNum];
       const noteEntry: NoteEntry = _.find(scale, (n) => n.name === note);
@@ -134,43 +134,63 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       } else {
         console.log("doing the thing at ", { sNum, fNum });
         self.startPlayFret([sNum, fNum]);
+        this.setState({ next_playing_fret: next });
         playClick();
         setTimeout(cb, (60 * 1000) / this.props.bpm);
       }
     };
 
-    const tabs_to_play = this.get_selected_frets({
-      startAtRoot: firstTime
+    let tabs_to_play = this.get_selected_frets({
+      startAtRoot: firstTime,
     });
+
+    // if (true) {
+    //   const upDownInterval = 3;
+    //   let new_tabs_to_play: any[] = []
+    //   _.times(tabs_to_play.length - upDownInterval + 1, (i) => {
+    //     new_tabs_to_play = [...new_tabs_to_play, ...tabs_to_play.slice(i, i + upDownInterval)]
+    //   })
+    //   tabs_to_play = new_tabs_to_play;
+    // }
+
     // if we're repeating, don't play the note we just played again
     if (!firstTime) {
       tabs_to_play.shift();
     }
     // console.log({tabs_to_play});
 
-    return async.mapSeries(tabs_to_play, play_iterator, (err) => {
-      if (!self.state.is_playing) {
-        return;
-      }
-
-      if (self.state.repeat) {
-        if (!firstTime && self.state.changeDirection) {
-          self.toggleDirection();
-        }
-        return self.playScale({ intro: false });
+    let tabIndex = 0;
+    const donePlayingCb = () => {
+      tabIndex++;
+      if (tabIndex < tabs_to_play.length) {
+        play_iterator(tabs_to_play[tabIndex], tabs_to_play[tabIndex + 1], donePlayingCb);
       } else {
-        return self.setState({ is_playing: false });
+        if (!self.state.is_playing) {
+          return;
+        }
+
+        if (self.state.repeat) {
+          if (!firstTime && self.state.changeDirection) {
+            self.toggleDirection();
+          }
+          return self.playScale({ intro: false });
+        } else {
+          return self.setState({ is_playing: false });
+        }
       }
-    });
+    };
+    play_iterator(tabs_to_play[tabIndex], tabs_to_play[tabIndex + 1], donePlayingCb);
   };
 
   countOff(done: Function) {
+    return done();
+
     const countInTimes = 8;
     let timesCounted = 0;
 
-    const tabs_to_play = this.get_selected_frets({startAtRoot: true});
+    const tabs_to_play = this.get_selected_frets({ startAtRoot: true });
     const firstTab = tabs_to_play[0];
-    console.log({firstTab})
+    console.log({ firstTab });
 
     const cb = () => {
       if (!this.state.is_playing) {
@@ -200,7 +220,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     console.log("setting playing to true");
     this.setState({ is_playing: true }, () => {
       if (intro) {
-        this.setState({originalDirection: this.state.direction })
+        this.setState({ originalDirection: this.state.direction });
         this.countOff(() => this.playScaleHelper({ firstTime: true }));
       } else {
         this.playScaleHelper({ firstTime: false });
@@ -209,10 +229,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   }
 
   stopPlayScale() {
-    return this.setState({ 
+    return this.setState({
       direction: this.state.originalDirection,
-      is_playing: false
-     });
+      is_playing: false,
+    });
   }
 
   toggleDirection() {
@@ -223,9 +243,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     }
   }
 
-  get_selected_frets({startAtRoot}: {
-    startAtRoot: boolean
-  }) {
+  get_selected_frets({ startAtRoot }: { startAtRoot: boolean }): FretType[] {
     const { scale, notes } = SCALES[this.props.Scale].get_notes(this.props.Note);
 
     const notesMap = generateNotes(
@@ -237,7 +255,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
 
     let sNum;
     let string, fret;
-    const ret_tabs = [];
+    const ret_tabs: FretType[] = [];
 
     let strings: [BlFret, number][] = (() => {
       const result: [BlFret, number][] = [];
@@ -334,7 +352,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       changeDirection,
       playing_fret,
       selectorX: 0,
-      originalDirection: direction
+      originalDirection: direction,
     };
 
     document.addEventListener("keydown", (e) => {
@@ -389,6 +407,13 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           const [_sN, _fN] = Array.from(this.state.playing_fret);
           if (_sN === ((sN as unknown) as number) && _fN === ((fN as unknown) as number)) {
             fret.playStart();
+          }
+        }
+
+        if (this.state.next_playing_fret && this.state.is_playing) {
+          const [_sN, _fN] = Array.from(this.state.next_playing_fret);
+          if (_sN === ((sN as unknown) as number) && _fN === ((fN as unknown) as number)) {
+            fret.playNext();
           }
         }
 
@@ -497,7 +522,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         <h1
           ref={this.displayRef}
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             justifyContent: "center",

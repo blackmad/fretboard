@@ -6,7 +6,8 @@ export const blFret = (
   playing: boolean,
   selected?: boolean,
   root_note?: boolean,
-  is_open?: boolean
+  is_open?: boolean,
+  next_playing?: boolean
 ) => {
   if (!checked) {
     checked = false;
@@ -26,7 +27,10 @@ export const blFret = (
 
   return {
     data() {
-      return { sNum, fNum, note, checked, playing, selected, root_note, is_open };
+      return { sNum, fNum, note, checked, playing, selected, root_note, is_open, next_playing };
+    },
+    playNext() {
+      return (next_playing = true);
     },
     playStart() {
       return (playing = true);

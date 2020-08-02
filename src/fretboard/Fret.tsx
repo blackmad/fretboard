@@ -7,6 +7,7 @@ export type FretData =  {
   root_note?: boolean;
   is_open?: boolean;
   note: string;
+  next_playing: boolean;
 }
 
 const Fret = (props: {
@@ -31,6 +32,7 @@ const Fret = (props: {
   }
 
   const playClass = props.data.playing ? "playing" : "";
+  const nextClass = props.data.next_playing ? "next" : "";
 
   if (props.data.is_open) {
     if (!props.data.checked) {
@@ -49,7 +51,7 @@ const Fret = (props: {
       }}
     >
       <span className="string"></span>
-      <span className={`circleBase ${className} ${playClass}`}>{text}</span>
+      <span className={`circleBase ${className} ${playClass} ${nextClass}`}>{text}</span>
     </div>
   );
 };
