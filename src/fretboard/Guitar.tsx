@@ -14,12 +14,9 @@ import async from "async";
 import React from "react";
 import * as _ from "lodash";
 
-import { emitter } from "./ev_channel";
 import { generateNotes } from "./notes";
-import { play_fret, load_fret } from "./notes_sound";
 import Selector, { SelectorProps } from "./selector";
 import { NoteEntry, SCALES } from "./scales";
-import { EVENT_SOUNDS_LOADING_START, EVENT_SOUNDS_LOADING_STOP } from "./defs";
 import { BlFret, blFret } from "./blFret";
 import GString from "./GString";
 
@@ -31,13 +28,12 @@ import {
   faPlay,
   faStop,
   faRedo,
-  faArrowRight,
   faArrowUp,
   faArrowDown,
   faRandom,
 } from "@fortawesome/free-solid-svg-icons";
 
-import Howl, { HowlCallback, HowlErrorCallback } from "howler";
+import Howl, { HowlCallback } from "howler";
 
 export const get_sound = (sNum: number, fNum: number, onload: HowlCallback): Howl.Howl => {
   const audio_file_wav = `./resources/${sNum}string/wav/${fNum}.wav`;
@@ -90,6 +86,7 @@ type MyState = {
   changeDirection: boolean;
   repeat: boolean;
   direction: string;
+  originalDirection: string;
   selector: SelectorProps;
   stringsNum: number;
   fretsNum: number;
@@ -116,14 +113,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       notes
     );
 
-    let shouldPlay = firstTime ? false : true;
-
     const self = this;
     const play_iterator = (nums: number[], cb: Function) => {
       const [sNum, fNum] = nums;
       const note = notesMap[sNum][fNum];
-      // console.log({note});
-      // console.log(notes);
       const noteEntry: NoteEntry = _.find(scale, (n) => n.name === note);
 
       console.log(this.state.direction);
@@ -139,14 +132,6 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         self.setState({ playing_fret: undefined });
         cb("stop");
       } else {
-        if (!shouldPlay) {
-          if (noteEntry.offset === 0) {
-            shouldPlay = true;
-          } else {
-            cb();
-            return;
-          }
-        }
         console.log("doing the thing at ", { sNum, fNum });
         self.startPlayFret([sNum, fNum]);
         playClick();
@@ -154,7 +139,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       }
     };
 
-    const tabs_to_play = this.get_selected_frets();
+    const tabs_to_play = this.get_selected_frets({
+      startAtRoot: firstTime
+    });
+    // if we're repeating, don't play the note we just played again
     if (!firstTime) {
       tabs_to_play.shift();
     }
@@ -164,11 +152,11 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       if (!self.state.is_playing) {
         return;
       }
-      if (self.state.changeDirection) {
-        self.toggleDirection();
-      }
 
       if (self.state.repeat) {
+        if (!firstTime && self.state.changeDirection) {
+          self.toggleDirection();
+        }
         return self.playScale({ intro: false });
       } else {
         return self.setState({ is_playing: false });
@@ -180,9 +168,19 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     const countInTimes = 8;
     let timesCounted = 0;
 
+    const tabs_to_play = this.get_selected_frets({startAtRoot: true});
+    const firstTab = tabs_to_play[0];
+    console.log({firstTab})
+
     const cb = () => {
       if (!this.state.is_playing) {
         return;
+      }
+
+      if (timesCounted % 2 === 0) {
+        this.setState({ playing_fret: firstTab as FretType });
+      } else {
+        this.setState({ playing_fret: undefined });
       }
 
       playClick();
@@ -202,6 +200,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     console.log("setting playing to true");
     this.setState({ is_playing: true }, () => {
       if (intro) {
+        this.setState({originalDirection: this.state.direction })
         this.countOff(() => this.playScaleHelper({ firstTime: true }));
       } else {
         this.playScaleHelper({ firstTime: false });
@@ -210,7 +209,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   }
 
   stopPlayScale() {
-    return this.setState({ is_playing: false });
+    return this.setState({ 
+      direction: this.state.originalDirection,
+      is_playing: false
+     });
   }
 
   toggleDirection() {
@@ -221,7 +223,18 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     }
   }
 
-  get_selected_frets() {
+  get_selected_frets({startAtRoot}: {
+    startAtRoot: boolean
+  }) {
+    const { scale, notes } = SCALES[this.props.Scale].get_notes(this.props.Note);
+
+    const notesMap = generateNotes(
+      this.state.stringsNum,
+      this.state.fretsNum,
+      this.props.tuning.notes,
+      notes
+    );
+
     let sNum;
     let string, fret;
     const ret_tabs = [];
@@ -238,6 +251,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       strings = strings.reverse();
     }
 
+    let shouldInclude = startAtRoot ? false : true;
+
     for ([string, sNum] of Array.from(strings)) {
       let fNum;
       let frets: [BlFret, number][] = [];
@@ -251,7 +266,16 @@ export default class Guitar extends React.Component<MyProps, MyState> {
 
       for ([fret, fNum] of Array.from(frets)) {
         if (fret.data().selected && fret.data().checked) {
-          ret_tabs.push([sNum, fNum]);
+          if (!shouldInclude) {
+            const note = notesMap[sNum][fNum];
+            const noteEntry: NoteEntry = _.find(scale, (n) => n.name === note);
+            if (noteEntry.offset === 0) {
+              shouldInclude = true;
+            }
+          }
+          if (shouldInclude) {
+            ret_tabs.push([sNum, fNum]);
+          }
         }
       }
     }
@@ -310,11 +334,14 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       changeDirection,
       playing_fret,
       selectorX: 0,
+      originalDirection: direction
     };
 
     document.addEventListener("keydown", (e) => {
       if (e.key === " ") {
         this.togglePlayPause();
+        e.preventDefault();
+        e.stopPropagation();
       }
     });
   }

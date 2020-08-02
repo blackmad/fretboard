@@ -66,8 +66,6 @@ const generate_scale = (Note: string, scale: Scale): {
         return _.uniq(scale.map((s) => s.name[0])).length === scale.length;
     }
 
-    console.log({Note});
-
     if (Note.includes('b')) {
         return {scale: withFlats, notes: FLAT_NOTES};
     }
