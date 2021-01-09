@@ -44,7 +44,7 @@ export default class Selector extends React.Component<SelectorProps, MyState> {
 
   constructor(props: SelectorProps) {
     super(props);
-
+      
     this.elRef = React.createRef();
 
     this.state = {
@@ -54,6 +54,10 @@ export default class Selector extends React.Component<SelectorProps, MyState> {
       loader: !!props.loader,
       loaderFontSize: 20,
     };
+  }
+
+  componentWillReceiveProps(newProps: SelectorProps) {
+    this.setState({pos: newProps.initialPos || {x: 0, y: 0}});
   }
 
   turnOnLoader = () => {

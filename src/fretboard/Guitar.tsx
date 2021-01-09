@@ -308,6 +308,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
 
   constructor(props: MyProps) {
     super(props);
+    
+    window.onresize = () => {
+      this.componentDidMount();
+    }
 
     this.displayRef = React.createRef();
 

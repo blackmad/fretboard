@@ -4,7 +4,7 @@ import "./css/bootstrap.css";
 import "./css/style.css";
 import ScalesPage from "./fretboard/pages/scales_page_component";
 
-function App() {
+function App() {  
   return (
     <>
       <div className="smallScreen" style={{
