@@ -494,6 +494,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
               key={`fret_num_${num}`}
               className={`col-md-1 fretnum ${active}`}
               style={{ width: `${this.props.fretWidth}px` }}
+              // onClick={() => selectFretNum(num)}
             >
               {num}
             </div>
