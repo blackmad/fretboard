@@ -6,7 +6,7 @@
 
 .fretnum {
   padding: 0;
-  right: -9px;
+  right: -4px;
   /* text-align: center; */
   font-weight: bold;
   cursor: pointer;
@@ -95,6 +95,7 @@
   z-index: 3;
   position: absolute;
   line-height: 26px;
+  margin-left: 10px;
 }
 
 .padding0 {

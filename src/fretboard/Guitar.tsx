@@ -300,7 +300,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     const selectorWidth = this.state.selectorFretsCount * this.props.fretWidth;
     const { selector } = this.state;
     const selectorX = this.jsGuitarRef.current.offsetLeft;
-    selector.initialPos = { x: selectorX, y: this.jsGuitarRef.current.offsetTop - SelectorPaddingPx / 2 };
+    selector.initialPos = { x: selectorX - 10, y: this.jsGuitarRef.current.offsetTop - SelectorPaddingPx / 2 };
     selector.minX = selectorX - 10;
     selector.maxX = selectorX + (this.state.fretsNum + 1) * this.props.fretWidth - selectorWidth;
     return this.setState({ selector, selectorX });
@@ -390,7 +390,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         const fret = string[fN];
         const fret_offset =
           (this.state.selector?.initialPos?.x || 0) +
-          ((fN as unknown) as number) * this.props.fretWidth;
+          ((fN as unknown) as number) * this.props.fretWidth + 10;
 
         if (fret_offset >= x && fret_offset < x + selectorWidth) {
           fret.select();
@@ -464,7 +464,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
               style={{
                 textAlign: "left",
                 width: `${this.props.fretWidth}px`,
-                right: "9px",
+                right: "12px",
                 fontSize: "x-large",
               }}
             >
