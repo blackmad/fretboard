@@ -52,8 +52,6 @@ const generate_scale_helper = (
           idx = get_new_index(idx, notesRef);
         });
 
-        console.log({ notesRef });
-
         result.push({
           name: notesRef[idx],
           degree: degree + 2,
@@ -138,21 +136,21 @@ const SCALES: Record<string, Scale> = {
     },
   },
 
-  PentatonicMinor: {
-    desc: "Pentatonic Minor",
-    names: ["Minor 3rd", "Perfect 4th", "Perfect 5th", "Minor 7th", "Octave"],
-    size: [BigSTEP, STEP, STEP, BigSTEP, STEP],
-    get_notes(Tonica) {
-      return generate_scale(Tonica, SCALES.PentatonicMinor);
-    },
-  },
-
   PentatonicMajor: {
     desc: "Pentatonic Major",
     names: ["Major 3rd", "Perfect 4th", "Perfect 5th", "Major 7th", "Octave"],
     size: [STEP, STEP, BigSTEP, STEP, BigSTEP],
     get_notes(Tonica) {
       return generate_scale(Tonica, SCALES.PentatonicMajor);
+    },
+  },
+
+  PentatonicMinor: {
+    desc: "Pentatonic Minor",
+    names: ["Minor 3rd", "Perfect 4th", "Perfect 5th", "Minor 7th", "Octave"],
+    size: [BigSTEP, STEP, STEP, BigSTEP, STEP],
+    get_notes(Tonica) {
+      return generate_scale(Tonica, SCALES.PentatonicMinor);
     },
   },
 
