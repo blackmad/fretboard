@@ -52,9 +52,15 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
     bpm: 80,
   };
 
+  constructor(props: MyProps) {
+    super(props);
+    console.log(window.location.hash);
+    const searchParams = new URLSearchParams(window.location.hash.substring(1));
+    this.state = {...this.state, ...Object.fromEntries(searchParams)}
+  }
+
   setStateAndUrl(mutation: any) {
     this.setState(mutation, () => {
-      console.log(mutation);
       const params = new URLSearchParams(_.mapValues(this.state, (v) => v.toString()));
       window.location.hash = params.toString();
     });
@@ -134,7 +140,7 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                     ]}
                     onChange={(n) => {
                       console.log(n);
-                      this.setState({ Scale: (n as any)[0].value });
+                      this.setStateAndUrl({ Scale: (n as any)[0].value });
                     }}
                   />
                 </div>
@@ -154,7 +160,7 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                   <input
                     value={this.state.bpm}
                     onChange={(e: any) =>
-                      this.setState({ bpm: Number(e!.target.value) })
+                      this.setStateAndUrl({ bpm: Number(e!.target.value) })
                     }
                   />
                 </div>
