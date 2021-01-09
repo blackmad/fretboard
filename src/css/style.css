@@ -84,8 +84,8 @@
 
 .circleBase {
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   margin: auto;
   padding: 0px;
   display: table-cell;
@@ -94,7 +94,7 @@
   font-weight: bold;
   z-index: 3;
   position: absolute;
-  line-height: 30px;
+  line-height: 26px;
 }
 
 .padding0 {

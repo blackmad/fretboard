@@ -100,6 +100,8 @@ type MyState = {
 
 type FretType = [number, number];
 
+const SelectorPaddingPx = 16;
+
 export default class Guitar extends React.Component<MyProps, MyState> {
   jsGuitarRef: React.RefObject<HTMLDivElement>;
   displayRef: React.RefObject<HTMLHeadingElement>;
@@ -298,8 +300,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     const selectorWidth = this.state.selectorFretsCount * this.props.fretWidth;
     const { selector } = this.state;
     const selectorX = this.jsGuitarRef.current.offsetLeft;
-    selector.initialPos = { x: selectorX, y: this.jsGuitarRef.current.offsetTop };
-    selector.minX = selectorX;
+    selector.initialPos = { x: selectorX, y: this.jsGuitarRef.current.offsetTop - SelectorPaddingPx / 2 };
+    selector.minX = selectorX - 10;
     selector.maxX = selectorX + (this.state.fretsNum + 1) * this.props.fretWidth - selectorWidth;
     return this.setState({ selector, selectorX });
   }
@@ -324,7 +326,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     this.jsGuitarRef = React.createRef();
 
     selector = {
-      height: stringsNum * props.fretHeight,
+      height: stringsNum * props.fretHeight + SelectorPaddingPx,
       width: selectorWidth,
       onXChange: (x: number) => this.onSelectorMove(x),
       minX: 20,

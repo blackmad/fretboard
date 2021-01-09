@@ -146,14 +146,8 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                     onChange={(n) => this.setState({ tuning: (n as any).value })}
                   />
                 </div> */}
-
+<input></input>
                 <div
-                  style={{
-                    fontFamily: "inherit",
-                    fontSize: "inherit",
-                    lineHeight: "inherit",
-                    color: "inherit",
-                  }}
                 >
                   <input
                     value={this.state.bpm}
