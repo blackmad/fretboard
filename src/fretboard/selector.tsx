@@ -4,6 +4,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import React from "react";
+import * as _ from 'lodash';
 
 import { emitter } from "./ev_channel";
 
@@ -31,6 +32,7 @@ type MyState = {
   relx: number;
   pos: Position;
   loader: boolean;
+  originalInitialPos: Position;
 };
 
 export default class Selector extends React.Component<SelectorProps, MyState> {
@@ -49,6 +51,7 @@ export default class Selector extends React.Component<SelectorProps, MyState> {
 
     this.state = {
       pos: props.initialPos || {x: 0, y: 0},
+      originalInitialPos: props.initialPos || {x: 0, y: 0},
       dragging: false,
       relx: 0,
       loader: !!props.loader,
@@ -57,7 +60,10 @@ export default class Selector extends React.Component<SelectorProps, MyState> {
   }
 
   componentWillReceiveProps(newProps: SelectorProps) {
-    this.setState({pos: newProps.initialPos || {x: 0, y: 0}});
+    if (newProps.initialPos && 
+      !_.isEqualWith(newProps.initialPos, this.state.originalInitialPos)) {
+      this.setState({pos: newProps.initialPos});
+    }
   }
 
   turnOnLoader = () => {
@@ -128,7 +134,6 @@ export default class Selector extends React.Component<SelectorProps, MyState> {
     const left = this.elRef.current?.offsetLeft || 0;
     const relx = e.pageX - left;
     this.setState({ dragging: true, relx });
-    console.log({left, relx, dragging: true})
     e.stopPropagation();
     return e.preventDefault();
   }
@@ -141,7 +146,6 @@ export default class Selector extends React.Component<SelectorProps, MyState> {
 
   onMouseMove = (e: MouseEvent) => {
     if (!this.state.dragging) {
-      console.log('not draggin')
       return;
     }
 
@@ -156,8 +160,6 @@ export default class Selector extends React.Component<SelectorProps, MyState> {
     } else if (newX >= maxX) {
       pos.x = maxX;
     }
-
-    console.log({pos, newX, minX, maxX, useX, ch: this.props.onXChange})
 
     if (typeof this.props.onXChange === "function") {
       this.props.onXChange(pos.x);

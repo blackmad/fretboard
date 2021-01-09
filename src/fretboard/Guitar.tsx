@@ -333,6 +333,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     super(props);
 
     window.onresize = () => {
+      console.log('resizing');
       this.componentDidMount();
     };
 

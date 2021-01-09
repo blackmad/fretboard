@@ -117,18 +117,6 @@
   text-indent: 50px;
 }
 
-.smallScreen {
-  display: none !important;
-}
-@media only screen and (max-width: 1000px) {
-  .smallScreen {
-    display: block !important;
-  }
-  .bigScreen {
-    display: none !important;
-  }
-}
-
 .weirdInput {
   line-height: 30px;
   width: 7.5rem;
