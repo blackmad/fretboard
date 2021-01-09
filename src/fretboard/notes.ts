@@ -9,26 +9,45 @@
  */
 let A, Ad, B, C, Cd, D, Dd, E, F, Fd, G, Gd, ref;
 
-export const ALL_NOTES = 
-    ["C", "C#", "Db", "D", "D#", "Eb", "E", "Fb", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B", "Cb"];
+export const ALL_NOTES = [
+  "C",
+  "C♯",
+  "D♭",
+  "D",
+  "D♯",
+  "E♭",
+  "E",
+  "F♭",
+  "F",
+  "F♯",
+  "G♭",
+  "G",
+  "G♯",
+  "A♭",
+  "A",
+  "A♯",
+  "B♭",
+  "♭",
+  "C♭",
+];
 
 export const SHARP_NOTES =
   (([C, Cd, D, Dd, E, F, Fd, G, Gd, A, Ad, B] = Array.from(
-    (ref = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"])
+    (ref = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"])
   )),
   ref);
 
 export const FLAT_NOTES =
   (([C, Cd, D, Dd, E, F, Fd, G, Gd, A, Ad, B] = Array.from(
-    (ref = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"])
+    (ref = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"])
   )),
   ref);
 
 export type Tuning = {
-    name: string,
-    notes: string[],
-    offset: number[]
-}
+  name: string;
+  notes: string[];
+  offset: number[];
+};
 
 export const TUNINGS: Record<string, Tuning> = {
   Standard: {
@@ -85,7 +104,12 @@ export const getNoteGenerator = (note: string, notes: string[]) => {
 
 // Concatting because of consistency with tabs format
 // to make 1st element of array to be the 1st string
-export const generateNotes = (sCount: number, fCount: number, tuning: any, notes: string[]) => {
+export const generateNotes = (
+  sCount: number,
+  fCount: number,
+  tuning: any,
+  notes: string[]
+) => {
   const base: string[][] = [[]];
   return base.concat(
     (() => {

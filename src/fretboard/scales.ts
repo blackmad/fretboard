@@ -52,6 +52,8 @@ const generate_scale_helper = (
           idx = get_new_index(idx, notesRef);
         });
 
+        console.log({ notesRef });
+
         result.push({
           name: notesRef[idx],
           degree: degree + 2,
@@ -79,11 +81,11 @@ const generate_scale = (
     return _.uniq(scale.map((s) => s.name[0])).length === scale.length;
   }
 
-  if (Note.includes("b")) {
+  if (Note.includes("♭")) {
     return { scale: withFlats, notes: FLAT_NOTES };
   }
 
-  if (Note.includes("#")) {
+  if (Note.includes("♯")) {
     return { scale: withSharps, notes: SHARP_NOTES };
   }
 

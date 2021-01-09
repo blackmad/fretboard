@@ -1,5 +1,5 @@
 import React from "react";
-import * as _ from 'lodash';
+import * as _ from "lodash";
 import { SCALES } from "./../scales";
 import { ALL_NOTES, TUNINGS } from "./../notes";
 
@@ -54,14 +54,15 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
 
   constructor(props: MyProps) {
     super(props);
-    console.log(window.location.hash);
     const searchParams = new URLSearchParams(window.location.hash.substring(1));
-    this.state = {...this.state, ...Object.fromEntries(searchParams)}
+    this.state = { ...this.state, ...Object.fromEntries(searchParams) };
   }
 
   setStateAndUrl(mutation: any) {
     this.setState(mutation, () => {
-      const params = new URLSearchParams(_.mapValues(this.state, (v) => v.toString()));
+      const params = new URLSearchParams(
+        _.mapValues(this.state, (v) => v.toString())
+      );
       window.location.hash = params.toString();
     });
   }
@@ -71,7 +72,7 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
       <div>
         <div>
           <h2 className="text-center">
-            {`${this.state.Note} ${this.state.Scale}`}
+            {`${this.state.Note} ${SCALES[this.state.Scale].desc}`}
             {/* {`(${tuningName} tuning)`} */}
           </h2>
 
@@ -139,7 +140,6 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                       },
                     ]}
                     onChange={(n) => {
-                      console.log(n);
                       this.setStateAndUrl({ Scale: (n as any)[0].value });
                     }}
                   />
@@ -154,32 +154,39 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                     onChange={(n) => this.setState({ tuning: (n as any).value })}
                   />
                 </div> */}
-<input></input>
-                <div
-                >
+                <div style={{ position: "relative" }}>
                   <input
+                    className="weirdInput"
                     value={this.state.bpm}
                     onChange={(e: any) =>
                       this.setStateAndUrl({ bpm: Number(e!.target.value) })
                     }
                   />
+                  <span className="bpmLabel">bpm</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="footer"
-        style={{
-          color: 'darkslategrey',
-          width: '100%',
-          textAlign: 'center',
-          position: 'absolute',
-          bottom: '10px',
-          fontSize: 'small'
-        }}>
-          A thing by <a href="http://blackmad.com">blackmad</a>, source on <a href="https://github.com/blackmad/fretboard">github</a>
-          <br/>based on work by <a href="https://github.com/AlexMost/fretboard">AlexMost</a>
-          <br/>includes sounds from <a href="https://freesound.org/">freesound.org</a>
+        <div
+          className="footer"
+          style={{
+            color: "darkslategrey",
+            width: "100%",
+            textAlign: "center",
+            position: "absolute",
+            bottom: "10px",
+            fontSize: "small",
+          }}
+        >
+          A thing by <a href="http://blackmad.com">blackmad</a>, source on{" "}
+          <a href="https://github.com/blackmad/fretboard">github</a>
+          <br />
+          based on work by{" "}
+          <a href="https://github.com/AlexMost/fretboard">AlexMost</a>
+          <br />
+          includes sounds from{" "}
+          <a href="https://freesound.org/">freesound.org</a>
         </div>
       </div>
     );

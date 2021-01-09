@@ -127,3 +127,20 @@
     display: none !important;
   }
 }
+
+.weirdInput {
+  line-height: 30px;
+  width: 7.5rem;
+  /* margin-left: 13px; */
+  padding-left: 8px;
+}
+
+.bpmLabel {
+  position: absolute;
+  right: 6px;
+  height: 100%;
+  text-align: center;
+  /* display: flex; */
+  margin: auto;
+  line-height: 36px;
+}
