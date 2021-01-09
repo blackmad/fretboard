@@ -63,7 +63,7 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
       <div>
         <div>
           <h2 className="text-center">
-            {`${this.state.Note} ${this.state.Scale}`} 
+            {`${this.state.Note} ${this.state.Scale}`}
             {/* {`(${tuningName} tuning)`} */}
           </h2>
 
@@ -89,7 +89,15 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
               />
             </div>
 
-            <div style={{ width: "850px", margin: "auto", display: 'flex', justifyContent: 'center', paddingTop: '15px' }}>
+            <div
+              style={{
+                width: "850px",
+                margin: "auto",
+                display: "flex",
+                justifyContent: "center",
+                paddingTop: "15px",
+              }}
+            >
               <div
                 style={{
                   display: "flex",
@@ -103,8 +111,12 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                     options={notesOptions as any}
                     placeholder="note"
                     searchable={false}
-                    values={[{ value: this.state.Note, label: this.state.Note }]}
-                    onChange={(n) => this.setState({ Note: (n as any)[0].value })}
+                    values={[
+                      { value: this.state.Note, label: this.state.Note },
+                    ]}
+                    onChange={(n) =>
+                      this.setState({ Note: (n as any)[0].value })
+                    }
                   />
                 </div>
                 <div style={{ width: "250px" }}>
@@ -112,7 +124,12 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                     options={scalesOptions as any}
                     placeholder="scale"
                     searchable={false}
-                    values={[{ value: this.state.Scale, label: SCALES[this.state.Scale].desc }]}
+                    values={[
+                      {
+                        value: this.state.Scale,
+                        label: SCALES[this.state.Scale].desc,
+                      },
+                    ]}
                     onChange={(n) => {
                       console.log(n);
                       this.setState({ Scale: (n as any)[0].value });
@@ -130,13 +147,37 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                   />
                 </div> */}
 
-                <input
-                  value={this.state.bpm}
-                  onChange={(e: any) => this.setState({ bpm: Number(e!.target.value) })}
-                />
+                <div
+                  style={{
+                    fontFamily: "inherit",
+                    fontSize: "inherit",
+                    lineHeight: "inherit",
+                    color: "inherit",
+                  }}
+                >
+                  <input
+                    value={this.state.bpm}
+                    onChange={(e: any) =>
+                      this.setState({ bpm: Number(e!.target.value) })
+                    }
+                  />
+                </div>
               </div>
             </div>
           </div>
+        </div>
+        <div className="footer"
+        style={{
+          color: 'darkslategrey',
+          width: '100%',
+          textAlign: 'center',
+          position: 'absolute',
+          bottom: '10px',
+          fontSize: 'small'
+        }}>
+          A thing by <a href="http://blackmad.com">blackmad</a>, source on <a href="https://github.com/blackmad/fretboard">github</a>
+          <br/>based on work by <a href="https://github.com/AlexMost/fretboard">AlexMost</a>
+          <br/>includes sounds from <a href="https://freesound.org/">freesound.org</a>
         </div>
       </div>
     );
