@@ -42,7 +42,7 @@ const Fret = (props: {
 
   return (
     <div
-      className={`col-md-1 ${fretClass} padding0`}
+      className={`col-xs-1 ${fretClass} padding0`}
       style={{
         width: props.width,
         height: props.height,

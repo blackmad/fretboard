@@ -101,7 +101,7 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
 
             <div
               style={{
-                width: "850px",
+                width: "100vw",
                 margin: "auto",
                 display: "flex",
                 justifyContent: "center",

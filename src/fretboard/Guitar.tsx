@@ -34,16 +34,22 @@ import {
 
 import Howl, { HowlCallback } from "howler";
 
-export const get_sound = (sNum: number, fNum: number, onload: HowlCallback): Howl.Howl => {
+export const get_sound = (
+  sNum: number,
+  fNum: number,
+  onload: HowlCallback
+): Howl.Howl => {
   const audio_file_wav = `./resources/${sNum}string/wav/${fNum}.wav`;
   const audio_file_ogg = `./resources/${sNum}string/ogg/${fNum}.ogg`;
   const audio_file_mp3 = `./resources/${sNum}string/mp3/${fNum}.mp3`;
-  return new Howl.Howl({ src: [audio_file_ogg, audio_file_mp3, audio_file_wav], onload });
+  return new Howl.Howl({
+    src: [audio_file_ogg, audio_file_mp3, audio_file_wav],
+    onload,
+  });
 };
 
 const clickHowl = new Howl.Howl({ src: "./resources/cowbell.wav" });
 const claveHowl = new Howl.Howl({ src: "./resources/clave.wav" });
-
 
 function playClick() {
   claveHowl.play();
@@ -59,9 +65,17 @@ const getClearFrets = (
   notesMap: Record<number, Record<number, string>>
 ) => {
   const frets: Record<number, Record<number, BlFret>> = {};
-  for (let i = 1, end = sNum, asc = 1 <= end; asc ? i <= end : i >= end; asc ? i++ : i--) {
+  for (
+    let i = 1, end = sNum, asc = 1 <= end;
+    asc ? i <= end : i >= end;
+    asc ? i++ : i--
+  ) {
     frets[i] = {};
-    for (let j = 0, end1 = fNum, asc1 = 0 <= end1; asc1 ? j <= end1 : j >= end1; asc1 ? j++ : j--) {
+    for (
+      let j = 0, end1 = fNum, asc1 = 0 <= end1;
+      asc1 ? j <= end1 : j >= end1;
+      asc1 ? j++ : j--
+    ) {
       frets[i][j] = blFret(i, j, notesMap[i][j], false, false);
     }
   }
@@ -111,7 +125,9 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   }
 
   playScaleHelper = ({ firstTime }: { firstTime: boolean }): any => {
-    const { scale, notes } = SCALES[this.props.Scale].get_notes(this.props.Note);
+    const { scale, notes } = SCALES[this.props.Scale].get_notes(
+      this.props.Note
+    );
 
     const notesMap = generateNotes(
       this.state.stringsNum,
@@ -147,7 +163,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     };
 
     const tabs_to_play = this.get_selected_frets({
-      startAtRoot: firstTime
+      startAtRoot: firstTime,
     });
     // if we're repeating, don't play the note we just played again
     if (!firstTime) {
@@ -175,9 +191,9 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     const countInTimes = 4;
     let timesCounted = 0;
 
-    const tabs_to_play = this.get_selected_frets({startAtRoot: true});
+    const tabs_to_play = this.get_selected_frets({ startAtRoot: true });
     const firstTab = tabs_to_play[0];
-    console.log({firstTab})
+    console.log({ firstTab });
 
     const cb = () => {
       if (!this.state.is_playing) {
@@ -193,7 +209,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       playIntroClick();
       timesCounted++;
       if (timesCounted === 1) {
-        this.displayRef.current!.innerHTML = "Get Ready! " + timesCounted.toString();
+        this.displayRef.current!.innerHTML =
+          "Get Ready! " + timesCounted.toString();
       } else {
         this.displayRef.current!.innerHTML = timesCounted.toString();
       }
@@ -211,7 +228,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     console.log("setting playing to true");
     this.setState({ is_playing: true }, () => {
       if (intro) {
-        this.setState({originalDirection: this.state.direction })
+        this.setState({ originalDirection: this.state.direction });
         this.countOff(() => this.playScaleHelper({ firstTime: true }));
       } else {
         this.playScaleHelper({ firstTime: false });
@@ -220,10 +237,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   }
 
   stopPlayScale() {
-    return this.setState({ 
+    return this.setState({
       direction: this.state.originalDirection,
-      is_playing: false
-     });
+      is_playing: false,
+    });
   }
 
   toggleDirection() {
@@ -234,10 +251,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     }
   }
 
-  get_selected_frets({startAtRoot}: {
-    startAtRoot: boolean
-  }) {
-    const { scale, notes } = SCALES[this.props.Scale].get_notes(this.props.Note);
+  get_selected_frets({ startAtRoot }: { startAtRoot: boolean }) {
+    const { scale, notes } = SCALES[this.props.Scale].get_notes(
+      this.props.Note
+    );
 
     const notesMap = generateNotes(
       this.state.stringsNum,
@@ -300,23 +317,31 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     const selectorWidth = this.state.selectorFretsCount * this.props.fretWidth;
     const { selector } = this.state;
     const selectorX = this.jsGuitarRef.current.offsetLeft;
-    selector.initialPos = { x: selectorX - 10, y: this.jsGuitarRef.current.offsetTop - SelectorPaddingPx / 2 };
+    selector.initialPos = {
+      x: selectorX - 10,
+      y: this.jsGuitarRef.current.offsetTop - SelectorPaddingPx / 2,
+    };
     selector.minX = selectorX - 10;
-    selector.maxX = selectorX + (this.state.fretsNum + 1) * this.props.fretWidth - selectorWidth;
+    selector.maxX =
+      selectorX +
+      (this.state.fretsNum + 1) * this.props.fretWidth -
+      selectorWidth;
     return this.setState({ selector, selectorX });
   }
 
   constructor(props: MyProps) {
     super(props);
-    
+
     window.onresize = () => {
       this.componentDidMount();
-    }
+    };
 
     this.displayRef = React.createRef();
 
-    const stringsNum = (props.data != null ? props.data.stringsNum : undefined) || 6;
-    const fretsNum = (props.data != null ? props.data.fretsNum : undefined) || 16;
+    const stringsNum =
+      (props.data != null ? props.data.stringsNum : undefined) || 6;
+    const fretsNum =
+      (props.data != null ? props.data.fretsNum : undefined) || 16;
     const selectorFretsCount = props.selectorFretsCount || 4;
     const timeout = 400;
     let selector = null;
@@ -349,7 +374,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       changeDirection,
       playing_fret,
       selectorX: 0,
-      originalDirection: direction
+      originalDirection: direction,
     };
 
     document.addEventListener("keydown", (e) => {
@@ -366,7 +391,9 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   }
 
   get_frets = (): Record<number, Record<number, BlFret>> => {
-    const { scale, notes } = SCALES[this.props.Scale].get_notes(this.props.Note);
+    const { scale, notes } = SCALES[this.props.Scale].get_notes(
+      this.props.Note
+    );
 
     const notesMap = generateNotes(
       this.state.stringsNum,
@@ -375,7 +402,11 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       notes
     );
 
-    const frets = getClearFrets(this.state.stringsNum, this.state.fretsNum, notesMap);
+    const frets = getClearFrets(
+      this.state.stringsNum,
+      this.state.fretsNum,
+      notesMap
+    );
     const selectorWidth = this.state.selectorFretsCount * this.props.fretWidth;
 
     if (!this.state.selector.initialPos) {
@@ -390,7 +421,8 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         const fret = string[fN];
         const fret_offset =
           (this.state.selector?.initialPos?.x || 0) +
-          ((fN as unknown) as number) * this.props.fretWidth + 10;
+          ((fN as unknown) as number) * this.props.fretWidth +
+          10;
 
         if (fret_offset >= x && fret_offset < x + selectorWidth) {
           fret.select();
@@ -402,7 +434,10 @@ export default class Guitar extends React.Component<MyProps, MyState> {
 
         if (this.state.playing_fret && this.state.is_playing) {
           const [_sN, _fN] = Array.from(this.state.playing_fret);
-          if (_sN === ((sN as unknown) as number) && _fN === ((fN as unknown) as number)) {
+          if (
+            _sN === ((sN as unknown) as number) &&
+            _fN === ((fN as unknown) as number)
+          ) {
             fret.playStart();
           }
         }
@@ -424,7 +459,9 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   };
 
   togglePlayPause = () => {
-    this.state.is_playing ? this.stopPlayScale() : this.playScale({ intro: true });
+    this.state.is_playing
+      ? this.stopPlayScale()
+      : this.playScale({ intro: true });
   };
 
   render() {
@@ -460,7 +497,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           return (
             <div
               key={`fret_dot_${num}`}
-              className={`col-md-1 fretdot`}
+              className={`col-xs-1 fretdot`}
               style={{
                 textAlign: "left",
                 width: `${this.props.fretWidth}px`,
@@ -482,9 +519,11 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           let active = "";
           const x = this.state.selectorX;
           if (x) {
-            const selectorWidth = this.state.selectorFretsCount * this.props.fretWidth;
+            const selectorWidth =
+              this.state.selectorFretsCount * this.props.fretWidth;
             const fret_offset =
-              (this.state.selector.initialPos?.x || 0) + num * this.props.fretWidth;
+              (this.state.selector.initialPos?.x || 0) +
+              num * this.props.fretWidth;
             if (fret_offset >= x && fret_offset < x + selectorWidth) {
               active = "active-num";
             }
@@ -492,7 +531,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           return (
             <div
               key={`fret_num_${num}`}
-              className={`col-md-1 fretnum ${active}`}
+              className={`col-xs-1 fretnum ${active}`}
               style={{ width: `${this.props.fretWidth}px` }}
               // onClick={() => selectFretNum(num)}
             >
@@ -504,45 +543,47 @@ export default class Guitar extends React.Component<MyProps, MyState> {
     );
 
     return (
-      <div
-        style={{
-          width: (this.state.fretsNum + 1) * this.props.fretWidth,
-          margin: "auto",
-        }}
-      >
-        <h1
-          ref={this.displayRef}
+      <>
+        <div
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            justifyContent: "center",
-            alignItems: "center",
-            alignContent: "center",
-            width: "100%",
-            backgroundColor: "beige",
-            padding: "20px",
-            fontSize: "xx-large",
-            display: this.state.is_playing ? "flex" : "none",
+            width: (this.state.fretsNum + 1) * this.props.fretWidth,
+            margin: "auto",
           }}
         >
-          xxxx
-        </h1>
+          <h1
+            ref={this.displayRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              justifyContent: "center",
+              alignItems: "center",
+              alignContent: "center",
+              width: "100%",
+              backgroundColor: "beige",
+              padding: "20px",
+              fontSize: "xx-large",
+              display: this.state.is_playing ? "flex" : "none",
+            }}
+          >
+            xxxx
+          </h1>
 
-        <div>
-          {FretNumbers}
-          {FretDots}
-        </div>
-        <div className="js-guitar" ref={this.jsGuitarRef}>
-          {SelectorComp}
+          <div>
+            {FretNumbers}
+            {FretDots}
+          </div>
+          <div className="js-guitar" ref={this.jsGuitarRef}>
+            {SelectorComp}
 
-          {StringsList}
-          {FretDots}
-          {FretNumbers}
+            {StringsList}
+            {FretDots}
+            {FretNumbers}
+          </div>
         </div>
         <div
           style={{
-            width: "100%",
+            width: "100vw",
             alignItems: "center",
             justifyContent: "center",
             alignContent: "center",
@@ -585,12 +626,14 @@ export default class Guitar extends React.Component<MyProps, MyState> {
           <Button
             variant="outline-primary"
             className={this.state.changeDirection ? "active" : ""}
-            onClick={() => this.setState({ changeDirection: !this.state.changeDirection })}
+            onClick={() =>
+              this.setState({ changeDirection: !this.state.changeDirection })
+            }
           >
             <FontAwesomeIcon icon={faRandom} />
           </Button>
         </div>
-      </div>
+      </>
     );
   }
 }

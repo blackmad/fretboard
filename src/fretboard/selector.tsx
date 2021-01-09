@@ -72,7 +72,7 @@ export default class Selector extends React.Component<SelectorProps, MyState> {
     return (
       <div
         ref={this.elRef}
-        className="col-md-4 selector"
+        className="col-xs-4 selector"
         style={{
           height: this.props.height,
           width: this.props.width,
