@@ -20,11 +20,11 @@ const print_size = (size: number[]) =>
     const result = [];
     for (let s of Array.from(size)) {
       if (s === STEP) {
-        result.push("Step");
+        result.push("W");
       } else if (s === hSTEP) {
-        result.push("hStep");
+        result.push("H");
       } else if (s === BigSTEP) {
-        result.push("BigSTEP");
+        result.push("+3");
       } else {
         result.push(`+${s}`);
       }
@@ -33,23 +33,13 @@ const print_size = (size: number[]) =>
     return result;
   })().join(" - ");
 
-let tuning;
-
 const notesOptions = ALL_NOTES.map((note) => ({ value: note, label: note }));
 const scalesOptions = (() => {
   const result = [];
   for (let scale in SCALES) {
-    result.push({ value: scale, label: scale });
+    result.push({ value: scale, label: SCALES[scale].desc });
   }
   return result;
-})();
-const tuningOptions = (() => {
-  const result1 = [];
-  for (tuning in TUNINGS) {
-    const v = TUNINGS[tuning];
-    result1.push({ value: tuning, label: v.name });
-  }
-  return result1;
 })();
 
 type MyProps = {};
@@ -69,12 +59,12 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
   };
 
   render() {
-    const tuningName = TUNINGS[this.state.tuning].name;
     return (
       <div>
         <div>
           <h2 className="text-center">
-            {`${this.state.Note} ${this.state.Scale} (${tuningName} tuning)`}
+            {`${this.state.Note} ${this.state.Scale}`} 
+            {/* {`(${tuningName} tuning)`} */}
           </h2>
 
           <p className="text-center text-muted text-bold">
@@ -122,7 +112,7 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                     options={scalesOptions as any}
                     placeholder="scale"
                     searchable={false}
-                    values={[{ value: this.state.Scale, label: this.state.Scale }]}
+                    values={[{ value: this.state.Scale, label: SCALES[this.state.Scale].desc }]}
                     onChange={(n) => {
                       console.log(n);
                       this.setState({ Scale: (n as any)[0].value });

@@ -21,7 +21,6 @@ import { BlFret, blFret } from "./blFret";
 import GString from "./GString";
 
 import Button from "react-bootstrap/Button";
-import ToggleButton from "react-bootstrap/ToggleButton";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -43,8 +42,14 @@ export const get_sound = (sNum: number, fNum: number, onload: HowlCallback): How
 };
 
 const clickHowl = new Howl.Howl({ src: "./resources/cowbell.wav" });
+const claveHowl = new Howl.Howl({ src: "./resources/clave.wav" });
+
 
 function playClick() {
+  claveHowl.play();
+}
+
+function playIntroClick() {
   clickHowl.play();
 }
 
@@ -154,7 +159,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
       }
 
       if (self.state.repeat) {
-        if (!firstTime && self.state.changeDirection) {
+        if (self.state.changeDirection) {
           self.toggleDirection();
         }
         return self.playScale({ intro: false });
@@ -165,7 +170,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
   };
 
   countOff(done: Function) {
-    const countInTimes = 8;
+    const countInTimes = 4;
     let timesCounted = 0;
 
     const tabs_to_play = this.get_selected_frets({startAtRoot: true});
@@ -183,9 +188,13 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         this.setState({ playing_fret: undefined });
       }
 
-      playClick();
+      playIntroClick();
       timesCounted++;
-      this.displayRef.current!.innerHTML = timesCounted.toString();
+      if (timesCounted === 1) {
+        this.displayRef.current!.innerHTML = "Get Ready! " + timesCounted.toString();
+      } else {
+        this.displayRef.current!.innerHTML = timesCounted.toString();
+      }
       if (timesCounted === countInTimes) {
         setTimeout(done, (60 * 1000) / this.props.bpm);
       } else {

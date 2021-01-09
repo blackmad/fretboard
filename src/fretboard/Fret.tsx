@@ -17,13 +17,13 @@ const Fret = (props: {
   let text = "";
   let fretClass = "fret";
 
-  let className = props.data.checked ? "on shadow" : "off";
+  let className = props.data.checked ? "on" : "off";
   if (props.data.checked && props.data.selected) {
-    className = "on-selected shadow";
+    className = "on-selected";
   }
 
   if (props.data.root_note) {
-    className = "on-selected-root shadow";
+    className = "on-selected-root";
   }
 
   if (props.data.checked) {
@@ -34,7 +34,7 @@ const Fret = (props: {
 
   if (props.data.is_open) {
     if (!props.data.checked) {
-      className = `${className} open shadow`;
+      className = `${className} open`;
     }
     text = props.data.note;
     fretClass = "";

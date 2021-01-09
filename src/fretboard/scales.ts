@@ -5,9 +5,13 @@
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import { get_note_index, get_new_index, SHARP_NOTES, FLAT_NOTES } from "./notes";
-import * as _ from 'lodash';
-import { notEqual } from "assert";
+import {
+  get_note_index,
+  get_new_index,
+  SHARP_NOTES,
+  FLAT_NOTES,
+} from "./notes";
+import * as _ from "lodash";
 
 const BigSTEP = 3;
 const STEP = 2;
@@ -20,7 +24,11 @@ export type NoteEntry = {
   offset: number;
 };
 
-const generate_scale_helper = (notesRef: string[], Note: string, scale: Scale): NoteEntry[] => {
+const generate_scale_helper = (
+  notesRef: string[],
+  Note: string,
+  scale: Scale
+): NoteEntry[] => {
   let idx: number;
   const scale_notes = [
     {
@@ -39,7 +47,8 @@ const generate_scale_helper = (notesRef: string[], Note: string, scale: Scale): 
       for (let s of Array.from(scale.size)) {
         offset += s;
 
-        _.times(s, () => {
+        // eslint-disable-next-line no-loop-func
+        _.times(s, (_t) => {
           idx = get_new_index(idx, notesRef);
         });
 
@@ -56,30 +65,34 @@ const generate_scale_helper = (notesRef: string[], Note: string, scale: Scale): 
   );
 };
 
-const generate_scale = (Note: string, scale: Scale): {
-    notes: string[], scale: NoteEntry[]
- } => {
-    const withSharps = generate_scale_helper(SHARP_NOTES, Note, scale);
-    const withFlats = generate_scale_helper(FLAT_NOTES, Note, scale);
+const generate_scale = (
+  Note: string,
+  scale: Scale
+): {
+  notes: string[];
+  scale: NoteEntry[];
+} => {
+  const withSharps = generate_scale_helper(SHARP_NOTES, Note, scale);
+  const withFlats = generate_scale_helper(FLAT_NOTES, Note, scale);
 
-    function isValidScale(scale: NoteEntry[]) {
-        return _.uniq(scale.map((s) => s.name[0])).length === scale.length;
-    }
+  function isValidScale(scale: NoteEntry[]) {
+    return _.uniq(scale.map((s) => s.name[0])).length === scale.length;
+  }
 
-    if (Note.includes('b')) {
-        return {scale: withFlats, notes: FLAT_NOTES};
-    }
-    
-    if (Note.includes('#')) {
-    return {scale: withSharps, notes: SHARP_NOTES};
-    }
+  if (Note.includes("b")) {
+    return { scale: withFlats, notes: FLAT_NOTES };
+  }
 
-    if (!isValidScale(withSharps)) {
-        return {scale: withFlats, notes: FLAT_NOTES};
-    }
+  if (Note.includes("#")) {
+    return { scale: withSharps, notes: SHARP_NOTES };
+  }
 
-    return {scale: withSharps, notes: SHARP_NOTES};
-}
+  if (!isValidScale(withSharps)) {
+    return { scale: withFlats, notes: FLAT_NOTES };
+  }
+
+  return { scale: withSharps, notes: SHARP_NOTES };
+};
 
 type Scale = {
   desc: string;
@@ -90,7 +103,7 @@ type Scale = {
 
 const SCALES: Record<string, Scale> = {
   Major: {
-    desc: "Major scale",
+    desc: "Major",
     size: [STEP, STEP, hSTEP, STEP, STEP, STEP, hSTEP],
     names: [
       "Major 2nd",
@@ -106,8 +119,8 @@ const SCALES: Record<string, Scale> = {
     },
   },
 
-  Minor: {
-    desc: "Minor scale",
+  NaturalMinor: {
+    desc: "Natural Minor",
     names: [
       "Major 2nd",
       "Minor 3rd",
@@ -120,24 +133,6 @@ const SCALES: Record<string, Scale> = {
     size: [STEP, hSTEP, STEP, STEP, hSTEP, STEP, STEP],
     get_notes(Tonica) {
       return generate_scale(Tonica, SCALES.Minor);
-    },
-  },
-
-  Arabic: {
-    desc: "Arabic scale",
-    names: [],
-    size: [hSTEP, BigSTEP, hSTEP, hSTEP, BigSTEP, hSTEP, STEP],
-    get_notes(Tonica) {
-      return generate_scale(Tonica, SCALES.Arabic);
-    },
-  },
-
-  Blues: {
-    desc: "Blues scale",
-    names: [],
-    size: [BigSTEP, STEP, hSTEP, hSTEP, BigSTEP, STEP],
-    get_notes(Tonica) {
-      return generate_scale(Tonica, SCALES.Blues);
     },
   },
 
@@ -156,6 +151,24 @@ const SCALES: Record<string, Scale> = {
     size: [STEP, STEP, BigSTEP, STEP, BigSTEP],
     get_notes(Tonica) {
       return generate_scale(Tonica, SCALES.PentatonicMajor);
+    },
+  },
+
+  Arabic: {
+    desc: "Arabic",
+    names: [],
+    size: [hSTEP, BigSTEP, hSTEP, hSTEP, BigSTEP, hSTEP, STEP],
+    get_notes(Tonica) {
+      return generate_scale(Tonica, SCALES.Arabic);
+    },
+  },
+
+  Blues: {
+    desc: "Blues",
+    names: [],
+    size: [BigSTEP, STEP, hSTEP, hSTEP, BigSTEP, STEP],
+    get_notes(Tonica) {
+      return generate_scale(Tonica, SCALES.Blues);
     },
   },
 
