@@ -80,9 +80,10 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
             {print_size(SCALES[this.state.Scale].size)}
           </p>
           <p className="text-center text-bold">
-            {`${SCALES[this.state.Scale]
+            {`${
+              _.dropRight(SCALES[this.state.Scale]
               .get_notes(this.state.Note)
-              .scale.map((n: any) => n.name)
+              .scale.map((n: any) => n.name), 1)
               .join(" ")}`}
           </p>
           <div>
