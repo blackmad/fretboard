@@ -12,6 +12,7 @@ import {
   FLAT_NOTES,
 } from "./notes";
 import * as _ from "lodash";
+import ScalesPage from "./pages/scales_page_component";
 
 const BigSTEP = 3;
 const STEP = 2;
@@ -72,11 +73,17 @@ const generate_scale = (
   notes: string[];
   scale: NoteEntry[];
 } => {
+  const rootScale = SCALES[scale.rootScale || ""] || scale;
+  console.log({ rootScale });
+  const rootWithSharps = generate_scale_helper(SHARP_NOTES, Note, rootScale);
+  console.log(rootWithSharps);
+  // const rootWithFlats = generate_scale_helper(FLAT_NOTES, Note, rootScale);
+
   const withSharps = generate_scale_helper(SHARP_NOTES, Note, scale);
   const withFlats = generate_scale_helper(FLAT_NOTES, Note, scale);
 
   function isValidScale(scale: NoteEntry[]) {
-    return _.uniq(scale.map((s) => s.name[0])).length === scale.length;
+    return _.uniq(scale.map((s) => s.name[0])).length === scale.length - 1;
   }
 
   if (Note.includes("♭")) {
@@ -87,7 +94,7 @@ const generate_scale = (
     return { scale: withSharps, notes: SHARP_NOTES };
   }
 
-  if (!isValidScale(withSharps)) {
+  if (!isValidScale(rootWithSharps)) {
     return { scale: withFlats, notes: FLAT_NOTES };
   }
 
@@ -99,6 +106,7 @@ type Scale = {
   size: number[];
   get_notes: (s: string) => any;
   names: string[];
+  rootScale?: string;
 };
 
 const SCALES: Record<string, Scale> = {
@@ -137,6 +145,7 @@ const SCALES: Record<string, Scale> = {
   },
 
   PentatonicMajor: {
+    rootScale: "Major",
     desc: "Pentatonic Major",
     names: ["Major 3rd", "Perfect 4th", "Perfect 5th", "Major 7th", "Octave"],
     size: [STEP, STEP, BigSTEP, STEP, BigSTEP],
@@ -146,6 +155,7 @@ const SCALES: Record<string, Scale> = {
   },
 
   PentatonicMinor: {
+    rootScale: "NaturalMinor",
     desc: "Pentatonic Minor",
     names: ["Minor 3rd", "Perfect 4th", "Perfect 5th", "Minor 7th", "Octave"],
     size: [BigSTEP, STEP, STEP, BigSTEP, STEP],
@@ -173,6 +183,7 @@ const SCALES: Record<string, Scale> = {
   },
 
   MajorArpeggio: {
+    rootScale: "Mjajor",
     desc: "Major Arpeggio",
     names: ["Major 3rd", "Perfect 5th", "Octave"],
     size: [4, 3, 5],
@@ -182,6 +193,7 @@ const SCALES: Record<string, Scale> = {
   },
 
   MinorArpeggio: {
+    rootScale: "NaturalMinor",
     desc: "Minor Arpeggio",
     names: ["Minor 3rd", "Perfect 5th", "Octave"],
     size: [3, 4, 5],
