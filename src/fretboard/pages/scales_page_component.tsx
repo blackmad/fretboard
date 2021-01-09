@@ -1,11 +1,5 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import React from "react";
+import * as _ from 'lodash';
 import { SCALES } from "./../scales";
 import { ALL_NOTES, TUNINGS } from "./../notes";
 
@@ -57,6 +51,14 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
     tuning: "Standard",
     bpm: 80,
   };
+
+  setStateAndUrl(mutation: any) {
+    this.setState(mutation, () => {
+      console.log(mutation);
+      const params = new URLSearchParams(_.mapValues(this.state, (v) => v.toString()));
+      window.location.hash = params.toString();
+    });
+  }
 
   render() {
     return (
@@ -115,7 +117,7 @@ export default class ScalesPage extends React.Component<MyProps, MyState> {
                       { value: this.state.Note, label: this.state.Note },
                     ]}
                     onChange={(n) =>
-                      this.setState({ Note: (n as any)[0].value })
+                      this.setStateAndUrl({ Note: (n as any)[0].value })
                     }
                   />
                 </div>

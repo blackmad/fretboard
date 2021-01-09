@@ -132,7 +132,7 @@ const SCALES: Record<string, Scale> = {
     ],
     size: [STEP, hSTEP, STEP, STEP, hSTEP, STEP, STEP],
     get_notes(Tonica) {
-      return generate_scale(Tonica, SCALES.Minor);
+      return generate_scale(Tonica, SCALES.NaturalMinor);
     },
   },
 
