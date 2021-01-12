@@ -27,7 +27,7 @@ export const ALL_NOTES = [
   "A",
   "A♯",
   "B♭",
-  "♭",
+  "B",
   "C♭",
 ];
 

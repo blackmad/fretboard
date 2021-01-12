@@ -584,7 +584,7 @@ export default class Guitar extends React.Component<MyProps, MyState> {
         </div>
         <div
           style={{
-            width: "100vw",
+            width: "100%",
             alignItems: "center",
             justifyContent: "center",
             alignContent: "center",
