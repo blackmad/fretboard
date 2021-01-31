@@ -49,6 +49,7 @@
           continue;
         }
         _results.push(
+          // eslint-disable-next-line no-loop-func
           (function () {
             var _j, _len1, _results1;
             _results1 = [];

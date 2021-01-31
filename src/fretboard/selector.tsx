@@ -16,7 +16,6 @@ type Position = {
 };
 
 export type SelectorProps = {
-  useX?: boolean;
   useY?: boolean;
   minX: number;
   maxX: number;
@@ -151,7 +150,7 @@ export default class Selector extends React.Component<SelectorProps, MyState> {
 
     const pos = {} as { x: number | undefined };
     const newX = e.pageX - this.state.relx;
-    const { minX, maxX, useX } = this.props;
+    const { minX, maxX } = this.props;
 
     if (newX >= minX && newX <= maxX) {
       pos.x = newX;

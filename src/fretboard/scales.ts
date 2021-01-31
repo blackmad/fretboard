@@ -12,7 +12,6 @@ import {
   FLAT_NOTES,
 } from "./notes";
 import * as _ from "lodash";
-import ScalesPage from "./pages/scales_page_component";
 
 const BigSTEP = 3;
 const STEP = 2;
